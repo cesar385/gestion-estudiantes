@@ -113,8 +113,8 @@
             <div>
                 <button type="submit">Consultar</button>
             </div>
-            <a href="index.html">
-                <button>Volver</button>
+            <button id="volverBtn">Volver a la página de inicio</button>
+
         </form>
         <div id="resultado" style="display: none;">
             <h2>Resultados</h2>
@@ -166,6 +166,11 @@
     </div>
 
     <script>
+     document.getElementById('volverBtn').addEventListener('click', function() {
+     window.location.href = 'index.html';
+     });
+
+
         // Almacena la información de los estudiantes y sus resultados. Reemplazar legajo1 por numero de legajo.
         const estudiantes = {
             "5916": {
