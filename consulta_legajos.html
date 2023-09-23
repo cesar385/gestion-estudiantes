@@ -7,10 +7,12 @@
     <style>
         /* Estilos para el cuerpo de la página */
         body {
-      text-align: left;
-      font-family: 'Poppins', sans-serif;
-      background-color: #fff;
-    }
+            text-align: left;
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
 
         /* Estilos para el contenedor principal */
         .container {
@@ -57,7 +59,7 @@
             font-size: 14px;
             font-weight: bold;
         }
-        
+
         button:hover {
             background-color: #fab754;
             background-image: linear-gradient(to right, #6a84fa, #fab754);
@@ -70,31 +72,40 @@
             margin-top: 20px;
         }
 
-        th {
-            border: 1px solid #ccc;
-            padding: 10px;
+        /* Estilos para centrar los encabezados de la tabla de materias y notas */
+        #tabla-materias-notas thead th {
             text-align: center;
-            background-color: #007bff;
-            color: #fff;
         }
 
-        td {
+        th, td {
             border: 1px solid #ccc;
             padding: 10px;
             text-align: left;
         }
-        
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* Estilos para centrar las notas */
+        td.nota {
+            text-align: center;
+        }
 
         /* Estilos para el botón de impresión y volver */
+        .hidden {
+            display: none;
+        }
+
         #btn-imprimir, #btn-volver {
             background-color: #007bff;
             color: #fff;
-            border: 10px;
+            border: none;
             padding: 10px 20px;
             cursor: pointer;
             border-radius: 5px;
             font-size: 16px;
-            display: none;
         }
 
         #btn-imprimir:hover, #btn-volver:hover {
@@ -103,11 +114,11 @@
 
         /* Estilos para centrar el footer */
         footer {
-         text-align: center; /* Alinea el contenido del footer en el centro horizontalmente */
-         padding: 20px; /* Agrega un espacio alrededor del contenido del footer */
-         background-color: #333; /* Cambia el color de fondo del footer según tu preferencia */
-         color: #fff; /* Cambia el color del texto del footer según tu preferencia */
-         }
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -124,9 +135,8 @@
             <div>
                 <button id="volverBtn">Volver a inicio</button>
             </div>
-
         </form>
-        <div id="resultado" style="display: none;">
+        <div id="resultado" class="hidden">
             <h2>Reporte</h2>
             <h3>Datos del Estudiante</h3>
             <table>
@@ -143,7 +153,7 @@
                     <td></td>
                 </tr>
             </table>
-            
+
             <h3>Datos de la Institución</h3>
             <table>
                 <tr>
@@ -157,14 +167,16 @@
                     <td></td>
                 </tr>
             </table>
-            
-            <h3>Datos de Materias</h3>
-            <table>
-                <tr>
-                    <th>Materia</th>
-                    <th>Nota</th>
-                </tr>
-                <tbody id="tabla-resultados">
+
+            <h3>Datos de Materias y Notas</h3>
+            <table id="tabla-materias-notas">
+                <thead>
+                    <tr>
+                        <th>Materia</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
                     <!-- Aquí se mostrarán los resultados de la consulta -->
                 </tbody>
             </table>
@@ -176,10 +188,9 @@
     </div>
 
     <script>
-     document.getElementById('volverBtn').addEventListener('click', function() {
-     window.location.href = 'index.html';
-     });
-
+        document.getElementById('volverBtn').addEventListener('click', function () {
+            window.location.href = 'index.html';
+        });
 
         // Almacena la información de los estudiantes y sus resultados. Reemplazar legajo1 por numero de legajo.
         const estudiantes = {
@@ -245,7 +256,7 @@
         // Manejo del formulario
         const consultaForm = document.getElementById("consulta-form");
         const resultadoDiv = document.getElementById("resultado");
-        const tablaResultados = document.getElementById("tabla-resultados");
+        const tablaMateriasNotas = document.getElementById("tabla-materias-notas");
         const datosEstudiante = document.getElementById("datos-estudiante");
         const datosInstitucion = document.getElementById("datos-institucion");
         const btnImprimir = document.getElementById("btn-imprimir");
@@ -283,23 +294,24 @@
             datosInstitucion.children[1].textContent = resultados.institucion.cue;
             datosInstitucion.children[2].textContent = resultados.institucion.añoCursa;
 
-            // Limpia la tabla de resultados si hay datos anteriores
-            while (tablaResultados.firstChild) {
-                tablaResultados.removeChild(tablaResultados.firstChild);
+            // Limpia la tabla de materias y notas si hay datos anteriores
+            while (tablaMateriasNotas.tBodies[0].children.length > 0) {
+                tablaMateriasNotas.tBodies[0].removeChild(tablaMateriasNotas.tBodies[0].children[0]);
             }
 
-            // Agrega los resultados de las materias a la tabla
+            // Agrega los resultados de las materias y notas a la tabla
             resultados.materias.forEach((resultado) => {
-                const fila = document.createElement("tr");
+                const row = document.createElement("tr");
                 const materiaCell = document.createElement("td");
                 const notaCell = document.createElement("td");
 
                 materiaCell.textContent = resultado.materia;
                 notaCell.textContent = resultado.nota;
+                notaCell.classList.add("nota"); // Agrega la clase "nota" a la celda de nota
 
-                fila.appendChild(materiaCell);
-                fila.appendChild(notaCell);
-                tablaResultados.appendChild(fila);
+                row.appendChild(materiaCell);
+                row.appendChild(notaCell);
+                tablaMateriasNotas.tBodies[0].appendChild(row);
             });
 
             // Muestra los resultados y los botones de impresión y volver
@@ -323,11 +335,6 @@
             datosEstudiante.children[1].textContent = "";
             datosEstudiante.children[2].textContent = "";
             datosEstudiante.children[3].textContent = "";
-
-            // Limpia la tabla de resultados si hay datos anteriores
-            while (tablaResultados.firstChild) {
-                tablaResultados.removeChild(tablaResultados.firstChild);
-            }
         }
 
         // Función para imprimir la página
@@ -348,10 +355,8 @@
         });
     </script>
 </body>
-    
-    <footer>
+<footer>
     <p>&copy; 2023 Danderfert Julio Cesar. Todos los derechos reservados.</p>
-    <p>Creado sólo para el Programa Oportunidades - Federal</p>
-  </footer>
-
+    <p>Creado solo para el Programa Oportunidades - Federal</p>
+</footer>
 </html>
