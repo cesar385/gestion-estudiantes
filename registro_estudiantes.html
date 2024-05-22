@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <title>Sistema Gestión de Estudiantes</title>
+  
+  <style>
+    /* Estilos CSS */
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f2f2f2;
+    }
+
+
+    h1 { /* Logos */
+      text-align: center;
+      background-color: #fff;
+    }
+
+    h2 { /* Matricular Estudiantes */
+      text-align: center;
+      background-color: #6a84fa; /* Color celeste */
+      color: #fff; /* Texto en color blanco */
+      padding: 10px; /* Añadir espacio de relleno */
+      border-radius: 8px; /* Bordes */
+    }
+    
+    h3 { /* Sistema Gestion Estudiantes */
+      text-align: center;
+      background-color: #6a84fa; /* Color celeste */
+      color: #fff; /* Texto en color blanco */
+      padding: 10px; /* Añadir espacio de relleno */
+      border-radius: 8px;
+    }
+
+    form {
+      margin-bottom: 20px;
+      margin-top: auto;
+      background-color: #f2f2f2;
+    }
+
+    label {
+      display: flex;
+      margin-bottom: 5px;
+      margin-left: 10%;
+      
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      font-size: 16px;
+      width: 80%;
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-left: 10%;
+      margin-bottom: 20px;
+    }
+
+    input[type="submit"] { /* Boton Agregar */
+      font-size: 16px;
+      font-family: 'Poppins', sans-serif;
+      background-color: #6a84fa;
+      color: #fff;
+      border: none;
+      padding: 10px 30px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: 8px;
+      margin-left: 45%;
+      margin-bottom: 8px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #ff9a03;
+      background-image: linear-gradient(to right, #6a84fa, #fab754);
+    }
+
+    table {
+      font-size: 16px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border-radius: 4px;
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+      background-color: #f2f2f2;
+    }
+
+    th {
+      background-color: #6a84fa;
+      color: #fff;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .incomplete {
+      color: red;
+      text-align:left;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: normal;
+      margin-bottom: 10px;
+      margin-left: 12%;
+    }
+
+    .download-button { /* Boton Descargar */
+    background-color: #6a84fa;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 4px;
+    margin-top: 35px;
+    margin-left: 43%;
+  }
+
+  .download-button:hover {
+    background-color: #fab754;
+    background-image: linear-gradient(to right, #6a84fa, #fab754);
+  }
+
+  footer {
+    background-color: #f2f2f2;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-variant: inherit;
+    margin-top: 50px;
+  }
+
+  .back-button {
+    background-color: #6a84fa;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 4px;
+    margin-top: 35px;
+    margin-left: 47%;
+    }
+    
+    .back-button:hover {
+      background-color: #fab754;
+      background-image: linear-gradient(to right, #6a84fa, #fab754);
+    }
+  
+  footer p {
+    color: #000000;
+  }
+
+  </style>
+  
+  <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+  <script>
+    // Función que se ejecuta al cargar la página
+    window.onload = function () {
+      generarLegajo();
+    };
+
+    // Función para generar un legajo de 4 dígitos automáticamente
+    function generarLegajo() {
+      var legajo = Math.floor(Math.random() * 9000) + 1000; // Genera un número aleatorio de 4 dígitos
+
+      // Actualizar el campo "Legajo" con el número generado
+      document.getElementById("legajo").value = legajo;
+    }
+
+    // Función que se ejecuta al hacer clic en el botón "Agregar"
+    function agregarEstudiante(event) {
+      event.preventDefault(); // Evita que se recargue la página al enviar el formulario
+
+      // Obtener los valores de los campos del formulario
+      var legajo = document.getElementById("legajo").value;
+      var apellido = document.getElementById("apellido").value;
+      var nombre = document.getElementById("nombre").value;
+      var documento = document.getElementById("documento").value;
+      var cuil = document.getElementById("cuil").value;
+      var documentacionCheckboxes = document.getElementsByName("documentacion");
+
+      var documentacionSeleccionada = [];
+      var documentacionFaltante = [];
+
+        // Validar los campos obligatorios
+     if (apellido.trim() === '' || nombre.trim() === '' || documento.trim() === '' || cuil.trim() === '') {
+            alert('Por favor, complete todos los campos obligatorios.');
+            return;
+        }
+
+
+      // Obtener la documentación seleccionada y faltante
+      for (var i = 0; i < documentacionCheckboxes.length; i++) {
+        if (documentacionCheckboxes[i].checked) {
+          documentacionSeleccionada.push(documentacionCheckboxes[i].value);
+        } else {
+          documentacionFaltante.push(documentacionCheckboxes[i].value);
+        }
+      }
+
+      // Crear una nueva fila en la tabla con los datos del estudiante
+      var table = document.getElementById("estudiantes-table");
+      var newRow = table.insertRow();
+
+      var legajoCell = newRow.insertCell();
+      legajoCell.innerHTML = legajo;
+
+      var apellidoCell = newRow.insertCell();
+      apellidoCell.innerHTML = apellido;
+
+      var nombreCell = newRow.insertCell();
+      nombreCell.innerHTML = nombre;
+
+      var documentoCell = newRow.insertCell();
+      documentoCell.innerHTML = documento;
+
+      var cuilCell = newRow.insertCell();
+      cuilCell.innerHTML = cuil;
+
+      var documentacionCell = newRow.insertCell();
+
+      if (documentacionFaltante.length > 0) {
+        documentacionCell.classList.add("incomplete");
+        documentacionCell.innerHTML = documentacionFaltante.join(", ");
+      } else {
+        documentacionCell.innerHTML = "Completa";
+      }
+
+      // Limpiar los campos del formulario
+      document.getElementById("legajo").value = "";
+      document.getElementById("apellido").value = "";
+      document.getElementById("nombre").value = "";
+      document.getElementById("documento").value = "";
+      document.getElementById("cuil").value = "";
+
+      // Desmarcar los checkboxes de documentación
+      for (var i = 0; i < documentacionCheckboxes.length; i++) {
+        documentacionCheckboxes[i].checked = false;
+      }
+
+      // Generar un nuevo legajo automáticamente
+      generarLegajo();
+    }
+
+    // Función para descargar en Excel
+    function descargarEnExcel() {
+      // Obtener la tabla de estudiantes
+      var table = document.getElementById("estudiantes-table");
+
+      // Crear un objeto de libro de trabajo de Excel
+      var workbook = XLSX.utils.table_to_book(table);
+
+      // Generar el archivo de Excel
+      var excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+
+      // Convertir el búfer de Excel en un objeto Blob
+      var blob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+      // Crear un enlace para descargar el archivo Blob
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "estudiantes.xlsx";
+
+      // Simular el clic en el enlace para iniciar la descarga
+      link.click();
+    }
+  </script>
+</head>
+<body>
+  <h1>
+    <img src="logo1.png" alt="Logo de la institución">
+    <img src="logo2.png" alt="Logo de la institución">
+    <img src="logo3.png" alt="Logo de la institución"
+    style="max-width: 350px;">
+</h1>
+
+<h3 style="font-size: 32px;">
+    Sistema Gestión de Estudiantes
+</h3>
+
+  <form>
+    <h2>Matricular Estudiantes</h2>
+    <label for="legajo"><strong>Legajo:</strong></label>
+    <input type="text" id="legajo" name="legajo" readonly>
+
+    <label for="apellido"><strong>Apellido:</strong></label>
+    <input type="text" id="apellido" name="apellido" required>
+
+    <label for="nombre"><strong>Nombre:</strong></label>
+    <input type="text" id="nombre" name="nombre" required>
+
+    <label for="documento"><strong>Número de Documento:</strong></label>
+    <input type="number" id="documento" name="documento" required>
+
+    <label for="cuil"><strong>CUIL:</strong></label>
+    <input type="text" id="cuil" name="cuil" required>
+
+    <label for="documentacion"><strong>Documentación:</strong></label>
+
+    <div class="checkbox-container">
+        <input type="checkbox" id="fotocopia-dni" name="documentacion" value="Fotocopia de DNI">
+        <label for="fotocopia-dni">Fotocopia de DNI</label>
+    </div>
+
+    <div class="checkbox-container">
+      <input type="checkbox" id="cuil" name="documentacion" value="CUIL">
+      <label for="cuil">CUIL</label>
+    </div>
+
+    <div class="checkbox-container">
+      <input type="checkbox" id="partida-nacimiento" name="documentacion" value="Partida de Nacimiento">
+      <label for="partida-nacimiento">Partida de Nacimiento</label>
+    </div>
+
+    <div class="checkbox-container">
+      <input type="checkbox" id="certificado-estudios" name="documentacion" value="Certificado de Estudios">
+      <label for="certificado-estudios">Certificado de Estudios</label>
+    </div>
+
+    <div class="checkbox-container">
+        <input type="checkbox" id="foto-4x4" name="documentacion" value="Foto 4x4">
+        <label for="foto-4x4">Foto 4x4</label>
+      </div>
+
+    <input type="submit" value="Agregar" onclick="agregarEstudiante(event)">
+  </form>
+
+  <h2>Lista de Estudiantes</h2>
+  <table id="estudiantes-table">
+    <thead>
+      <tr>
+        <th>Legajo</th>
+        <th>Apellido</th>
+        <th>Nombre</th>
+        <th>Documento</th>
+        <th>CUIL</th>
+        <th>Documentación Faltante</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filas de estudiantes se agregan dinámicamente -->
+    </tbody>
+  </table>
+
+  <button class="download-button" onclick="descargarEnExcel()">Descargar en Excel</button>
+
+  <button class="back-button" onclick="window.history.back()">Volver</button>
+
+</body>
+
+ <footer>
+    <p>&copy; 2024 Danderfert Julio Cesar. Todos los derechos reservados.</p>
+    <p>Creado sólo para el Programa Oportunidades - Federal</p>
+  </footer>
+
+</html>

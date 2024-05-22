@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sistema Gestión de Estudiantes</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: 'Poppins', sans-serif;
+      background-color: #fff;
+    }
+
+   .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;;
+    }
+
+    .logo {
+      max-width: 350px;
+      height: auto;
+      margin: 0 10px;
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 34px;
+      margin-top: 80px;
+      background-color: #388beb;
+      border-radius: 10px;
+    }
+
+    button {
+      margin: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #388beb;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #fab754;
+      background-image: linear-gradient(to right, #6a84fa, #fab754);
+    }
+
+    /* Estilos para centrar el footer */
+    footer {
+      text-align: center; /* Alinea el contenido del footer en el centro horizontalmente */
+      padding: 20px; /* Agrega un espacio alrededor del contenido del footer */
+      background-color: #333; /* Cambia el color de fondo del footer según tu preferencia */
+      color: #fff; /* Cambia el color del texto del footer según tu preferencia */
+    }
+
+
+    
+  </style>
+  <script>
+    window.addEventListener('load', function() {
+      var btnRegistrar = document.getElementById('btnRegistrar');
+      var btnConsultar = document.getElementById('btnConsultar');
+
+      btnRegistrar.addEventListener('click', function() {
+        // Aquí puedes redirigir al usuario a la página de registro de estudiantes
+        // Por ejemplo:
+        window.location.href = 'registro_estudiantes.html';
+      });
+
+      btnConsultar.addEventListener('click', function() {
+        // Aquí puedes redirigir al usuario a la página de consulta de legajos
+        // Por ejemplo:
+        window.location.href = 'consulta_legajos.html';
+      });
+
+      // Actualizar la fecha y hora cada segundo
+      setInterval(actualizarFechaHora, 1000);
+    });
+
+    function actualizarFechaHora() {
+      var fechaHoraActual = new Date().toLocaleString();
+      var fechaHoraElemento = document.getElementById('fechaHora');
+      fechaHoraElemento.textContent = 'Fecha y hora: ' + fechaHoraActual;
+    }
+  </script>
+</head>
+<body>
+  <img class="logo" src="logo1.png" alt="Logo 1">
+  <img class="logo" src="logo2.png" alt="Logo 2">
+  <img class="logo" src="logo3.png" alt="Logo 3">
+
+  <h1>Bienvenido</h1>
+  
+  <button id="btnRegistrar"><strong> Matricular Estudiantes</strong></button>
+  <button id="btnConsultar"><strong> Consultar Legajos</strong></button>
+  
+  <p id="fechaHora">Fecha y hora: </p>
+
+
+</body>
+
+  <footer>
+    <p>&copy; 2024 Danderfert Julio Cesar. Todos los derechos reservados.</p>
+    <p>Creado sólo para el Programa Oportunidades - Federal</p>
+  </footer>
+
+  
+</html>

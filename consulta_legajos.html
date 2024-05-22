@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Legajos</title>
+    <style>
+        /* Estilos para el cuerpo de la página */
+        body {
+            text-align: left;
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estilos para el contenedor principal */
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilos para el encabezado */
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        /* Estilos para las etiquetas de formulario */
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Estilos para los campos de entrada de texto */
+        input[type="text"] {
+            width: 97%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Estilos para los botones */
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 20px;
+        }
+
+        button:hover {
+            background-color: #fab754;
+            background-image: linear-gradient(to right, #6a84fa, #fab754);
+        }
+
+        /* Estilos para la tabla de resultados */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        /* Estilos para centrar los encabezados de la tabla de materias y notas */
+        #tabla-materias-notas thead th {
+            text-align: center;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* Estilos para centrar las notas */
+        td.nota {
+            text-align: center;
+        }
+
+        /* Estilos para el botón de impresión y volver */
+        .hidden {
+            display: none;
+        }
+
+        #btn-imprimir, #btn-volver {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #btn-imprimir:hover, #btn-volver:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilos para centrar el footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consulta de Legajos</h1>
+        <form id="consulta-form">
+            <div>
+                <label for="legajo">Número de Legajo:</label>
+                <input type="text" id="legajo" name="legajo" placeholder="Ingrese el número de legajo" required>
+            </div>
+            <div>
+                <button type="submit">Consultar</button>
+            </div>
+            <div>
+                <button id="volverBtn">Volver a inicio</button>
+            </div>
+        </form>
+        <div id="resultado" class="hidden">
+            <h2>Reporte</h2>
+            <h3>Datos del Estudiante</h3>
+            <table>
+                <tr>
+                    <th>Apellido</th>
+                    <th>Nombre</th>
+                    <th>Documento</th>
+                    <th>CUIL</th>
+                </tr>
+                <tr id="datos-estudiante">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <h3>Datos de la Institución</h3>
+            <table>
+                <tr>
+                    <th>Nombre</th>
+                    <th>CUE</th>
+                    <th>Módulo que Cursa</th>
+                </tr>
+                <tr id="datos-institucion">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <h3>Datos de Materias y Notas</h3>
+            <table id="tabla-materias-notas">
+                <thead>
+                    <tr>
+                        <th>Módulo</th>
+                        <th>Materia</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se mostrarán los resultados de la consulta -->
+                </tbody>
+            </table>
+
+            <!-- Botones de impresión y volver -->
+            <button id="btn-imprimir">Imprimir</button>
+            <button id="btn-volver">Volver</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('volverBtn').addEventListener('click', function () {
+            window.location.href = 'index.html';
+        });
+
+        // Almacena la información de los estudiantes y sus resultados. Reemplazar legajo1 por numero de legajo.
+        const estudiantes = {
+            "1922": {
+                estudiante: {
+                    apellido: "Castrellon",
+                    nombre: "Lucrecia Yanina",
+                    documento: "32.695.800",
+                    cuil: "27-32695800-5",
+                },
+                institucion: {
+                    nombre: "Programa Oportunidades - FEDERAL",
+                    cue: "300351100",
+                    añoCursa: "Módulo VI",
+                },
+                materias: [
+                    { modulo: "Módulo I", materia: "Lenguas", nota: 9.75 },
+                    { modulo: "Módulo I", materia: "Matemática", nota: 9.38 },
+                    { modulo: "Módulo I", materia: "Ciencias Sociales", nota: 8.38 },
+                    { modulo: "Módulo I", materia: "Ciencias Naturales", nota: 9.75 },
+                    { modulo: "Módulo I", materia: "Proyecto de Acción", nota: 8.50 },
+
+                    { modulo: "Módulo II", materia: "Lenguas", nota: 7.75 },
+                    { modulo: "Módulo II", materia: "Matemática II", nota: 8.25 },
+                    { modulo: "Módulo II", materia: "Ciencias Sociales II", nota: 8.75 },
+                    { modulo: "Módulo II", materia: "Ciencias Naturales II", nota: 9.25 },
+                    { modulo: "Módulo II", materia: "Proyecto de Acción", nota: 7.50 },
+
+                    { modulo: "Módulo III", materia: "Lenguas", nota: 8.50 },
+                    { modulo: "Módulo III", materia: "Matemática III", nota: 8.75 },
+                    { modulo: "Módulo III", materia: "Ciencias Sociales III", nota: 9.50 },
+                    { modulo: "Módulo III", materia: "Ciencias Naturales III", nota: 10.00 },
+                    { modulo: "Módulo III", materia: "Proyecto de Acción", nota: 8.00 },
+
+                    { modulo: "Módulo IV", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo IV", materia: "Matemática IV", nota: 9.00 },
+                    { modulo: "Módulo IV", materia: "Ciencias Sociales IV", nota: 8.88 },
+                    { modulo: "Módulo IV", materia: "Ciencias Naturales IV", nota: 9.50 },
+                    { modulo: "Módulo IV", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo V", materia: "Lenguas", nota: 9.50 },
+                    { modulo: "Módulo V", materia: "Matemática V", nota: 9.00 },
+                    { modulo: "Módulo V", materia: "Ciencias Sociales V", nota: 8.88 },
+                    { modulo: "Módulo V", materia: "Ciencias Naturales V", nota: 9.50 },
+                    { modulo: "Módulo V", materia: "Proyecto de Acción", nota: 9.50 },
+                    // Añadir más materias para más módulos según sea necesario
+                ],
+            },
+
+            "9605": {
+                estudiante: {
+                    apellido: "Gauna",
+                    nombre: "Sebastian Ramon",
+                    documento: "27.836.910",
+                    cuil: "20-27836919-3",
+                },
+                institucion: {
+                    nombre: "Programa Oportunidades - FEDERAL",
+                    cue: "300351100",
+                    añoCursa: "Módulo VI",
+                },
+                materias: [
+                    { modulo: "Módulo I", materia: "Lenguas", nota: 8.75 },
+                    { modulo: "Módulo I", materia: "Matemática", nota: 8.00 },
+                    { modulo: "Módulo I", materia: "Ciencias Sociales", nota: 8.88 },
+                    { modulo: "Módulo I", materia: "Ciencias Naturales", nota: 9.50 },
+                    { modulo: "Módulo I", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo II", materia: "Lenguas", nota: 8.63 },
+                    { modulo: "Módulo II", materia: "Matemática II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Sociales II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Naturales II", nota: 9.75 },
+                    { modulo: "Módulo II", materia: "Proyecto de Acción", nota: 8.00 },
+
+                    { modulo: "Módulo III", materia: "Lenguas", nota: 8.50 },
+                    { modulo: "Módulo III", materia: "Matemática III", nota: 8.00 },
+                    { modulo: "Módulo III", materia: "Ciencias Sociales III", nota: 7.75 },
+                    { modulo: "Módulo III", materia: "Ciencias Naturales III", nota: 8.25 },
+                    { modulo: "Módulo III", materia: "Proyecto de Acción", nota: 7.00 },
+
+                    { modulo: "Módulo IV", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo IV", materia: "Matemática IV", nota: 9.00 },
+                    { modulo: "Módulo IV", materia: "Ciencias Sociales IV", nota: 8.88 },
+                    { modulo: "Módulo IV", materia: "Ciencias Naturales IV", nota: 9.50 },
+                    { modulo: "Módulo IV", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo V", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo V", materia: "Matemática V", nota: 9.00 },
+                    { modulo: "Módulo V", materia: "Ciencias Sociales V", nota: 8.88 },
+                    { modulo: "Módulo V", materia: "Ciencias Naturales V", nota: 9.50 },
+                    { modulo: "Módulo V", materia: "Proyecto de Acción", nota: 9.50 },
+                    // Añadir más materias para más módulos según sea necesario
+                ],
+            },
+            
+            "7155": {
+                estudiante: {
+                    apellido: "Gomez",
+                    nombre: "Adelaida Noemí",
+                    documento: "36.856.755",
+                    cuil: "27-36856755-3",
+                },
+                institucion: {
+                    nombre: "Programa Oportunidades - FEDERAL",
+                    cue: "300351100",
+                    añoCursa: "Módulo VI",
+                },
+                materias: [
+                    { modulo: "Módulo I", materia: "Lenguas", nota: 8.75 },
+                    { modulo: "Módulo I", materia: "Matemática", nota: 8.00 },
+                    { modulo: "Módulo I", materia: "Ciencias Sociales", nota: 8.88 },
+                    { modulo: "Módulo I", materia: "Ciencias Naturales", nota: 9.50 },
+                    { modulo: "Módulo I", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo II", materia: "Lenguas", nota: 8.63 },
+                    { modulo: "Módulo II", materia: "Matemática II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Sociales II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Naturales II", nota: 9.75 },
+                    { modulo: "Módulo II", materia: "Proyecto de Acción", nota: 8.00 },
+
+                    { modulo: "Módulo III", materia: "Lenguas", nota: 8.50 },
+                    { modulo: "Módulo III", materia: "Matemática III", nota: 8.00 },
+                    { modulo: "Módulo III", materia: "Ciencias Sociales III", nota: 7.75 },
+                    { modulo: "Módulo III", materia: "Ciencias Naturales III", nota: 8.25 },
+                    { modulo: "Módulo III", materia: "Proyecto de Acción", nota: 7.00 },
+
+                    { modulo: "Módulo IV", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo IV", materia: "Matemática IV", nota: 9.00 },
+                    { modulo: "Módulo IV", materia: "Ciencias Sociales IV", nota: 8.88 },
+                    { modulo: "Módulo IV", materia: "Ciencias Naturales IV", nota: 9.50 },
+                    { modulo: "Módulo IV", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo V", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo V", materia: "Matemática V", nota: 9.00 },
+                    { modulo: "Módulo V", materia: "Ciencias Sociales V", nota: 8.88 },
+                    { modulo: "Módulo V", materia: "Ciencias Naturales V", nota: 9.50 },
+                    { modulo: "Módulo V", materia: "Proyecto de Acción", nota: 9.50 },
+                    // Añadir más materias para más módulos según sea necesario
+                ],
+            },
+
+            "8832": {
+                estudiante: {
+                    apellido: "Gomez",
+                    nombre: "Adelaida Noemí",
+                    documento: "36.856.755",
+                    cuil: "27-36856755-3",
+                },
+                institucion: {
+                    nombre: "Programa Oportunidades - FEDERAL",
+                    cue: "300351100",
+                    añoCursa: "Módulo VI",
+                },
+                materias: [
+                    { modulo: "Módulo I", materia: "Lenguas", nota: 8.75 },
+                    { modulo: "Módulo I", materia: "Matemática", nota: 8.00 },
+                    { modulo: "Módulo I", materia: "Ciencias Sociales", nota: 8.88 },
+                    { modulo: "Módulo I", materia: "Ciencias Naturales", nota: 9.50 },
+                    { modulo: "Módulo I", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo II", materia: "Lenguas", nota: 8.63 },
+                    { modulo: "Módulo II", materia: "Matemática II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Sociales II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Naturales II", nota: 9.75 },
+                    { modulo: "Módulo II", materia: "Proyecto de Acción", nota: 8.00 },
+
+                    { modulo: "Módulo III", materia: "Lenguas", nota: 8.50 },
+                    { modulo: "Módulo III", materia: "Matemática III", nota: 8.00 },
+                    { modulo: "Módulo III", materia: "Ciencias Sociales III", nota: 7.75 },
+                    { modulo: "Módulo III", materia: "Ciencias Naturales III", nota: 8.25 },
+                    { modulo: "Módulo III", materia: "Proyecto de Acción", nota: 7.00 },
+
+                    { modulo: "Módulo IV", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo IV", materia: "Matemática IV", nota: 9.00 },
+                    { modulo: "Módulo IV", materia: "Ciencias Sociales IV", nota: 8.88 },
+                    { modulo: "Módulo IV", materia: "Ciencias Naturales IV", nota: 9.50 },
+                    { modulo: "Módulo IV", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo V", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo V", materia: "Matemática V", nota: 9.00 },
+                    { modulo: "Módulo V", materia: "Ciencias Sociales V", nota: 8.88 },
+                    { modulo: "Módulo V", materia: "Ciencias Naturales V", nota: 9.50 },
+                    { modulo: "Módulo V", materia: "Proyecto de Acción", nota: 9.50 },
+                    // Añadir más materias para más módulos según sea necesario
+                ],
+            },
+            
+            "3263": {
+                estudiante: {
+                    apellido: "Gozalez",
+                    nombre: "Maria Marisel",
+                    documento: "38.854.411",
+                    cuil: "27-36856755-3",
+                },
+                institucion: {
+                    nombre: "Programa Oportunidades - FEDERAL",
+                    cue: "300351100",
+                    añoCursa: "Módulo VI",
+                },
+                materias: [
+                    { modulo: "Módulo I", materia: "Lenguas", nota: 8.75 },
+                    { modulo: "Módulo I", materia: "Matemática", nota: 8.00 },
+                    { modulo: "Módulo I", materia: "Ciencias Sociales", nota: 8.88 },
+                    { modulo: "Módulo I", materia: "Ciencias Naturales", nota: 9.50 },
+                    { modulo: "Módulo I", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo II", materia: "Lenguas", nota: 8.63 },
+                    { modulo: "Módulo II", materia: "Matemática II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Sociales II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Naturales II", nota: 9.75 },
+                    { modulo: "Módulo II", materia: "Proyecto de Acción", nota: 8.00 },
+
+                    { modulo: "Módulo III", materia: "Lenguas", nota: 8.50 },
+                    { modulo: "Módulo III", materia: "Matemática III", nota: 8.00 },
+                    { modulo: "Módulo III", materia: "Ciencias Sociales III", nota: 7.75 },
+                    { modulo: "Módulo III", materia: "Ciencias Naturales III", nota: 8.25 },
+                    { modulo: "Módulo III", materia: "Proyecto de Acción", nota: 7.00 },
+
+                    { modulo: "Módulo IV", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo IV", materia: "Matemática IV", nota: 9.00 },
+                    { modulo: "Módulo IV", materia: "Ciencias Sociales IV", nota: 8.88 },
+                    { modulo: "Módulo IV", materia: "Ciencias Naturales IV", nota: 9.50 },
+                    { modulo: "Módulo IV", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo V", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo V", materia: "Matemática V", nota: 9.00 },
+                    { modulo: "Módulo V", materia: "Ciencias Sociales V", nota: 8.88 },
+                    { modulo: "Módulo V", materia: "Ciencias Naturales V", nota: 9.50 },
+                    { modulo: "Módulo V", materia: "Proyecto de Acción", nota: 9.50 },
+                    // Añadir más materias para más módulos según sea necesario
+                ],
+            },
+
+            "5991": {
+                estudiante: {
+                    apellido: "Hucke",
+                    nombre: "Andrea Liliana",
+                    documento: "36.856.755",
+                    cuil: "27-36856755-3",
+                },
+                institucion: {
+                    nombre: "Programa Oportunidades - FEDERAL",
+                    cue: "300351100",
+                    añoCursa: "Módulo VI",
+                },
+                materias: [
+                    { modulo: "Módulo I", materia: "Lenguas", nota: 8.75 },
+                    { modulo: "Módulo I", materia: "Matemática", nota: 8.00 },
+                    { modulo: "Módulo I", materia: "Ciencias Sociales", nota: 8.88 },
+                    { modulo: "Módulo I", materia: "Ciencias Naturales", nota: 9.50 },
+                    { modulo: "Módulo I", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo II", materia: "Lenguas", nota: 8.63 },
+                    { modulo: "Módulo II", materia: "Matemática II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Sociales II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Naturales II", nota: 9.75 },
+                    { modulo: "Módulo II", materia: "Proyecto de Acción", nota: 8.00 },
+
+                    { modulo: "Módulo III", materia: "Lenguas", nota: 8.50 },
+                    { modulo: "Módulo III", materia: "Matemática III", nota: 8.00 },
+                    { modulo: "Módulo III", materia: "Ciencias Sociales III", nota: 7.75 },
+                    { modulo: "Módulo III", materia: "Ciencias Naturales III", nota: 8.25 },
+                    { modulo: "Módulo III", materia: "Proyecto de Acción", nota: 7.00 },
+
+                    { modulo: "Módulo IV", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo IV", materia: "Matemática IV", nota: 9.00 },
+                    { modulo: "Módulo IV", materia: "Ciencias Sociales IV", nota: 8.88 },
+                    { modulo: "Módulo IV", materia: "Ciencias Naturales IV", nota: 9.50 },
+                    { modulo: "Módulo IV", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo V", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo V", materia: "Matemática V", nota: 9.00 },
+                    { modulo: "Módulo V", materia: "Ciencias Sociales V", nota: 8.88 },
+                    { modulo: "Módulo V", materia: "Ciencias Naturales V", nota: 9.50 },
+                    { modulo: "Módulo V", materia: "Proyecto de Acción", nota: 9.50 },
+                    // Añadir más materias para más módulos según sea necesario
+                ],
+            },
+
+            "2764": {
+                estudiante: {
+                    apellido: "Vilches",
+                    nombre: "Sandra Isabel",
+                    documento: "36.856.755",
+                    cuil: "27-36856755-3",
+                },
+                institucion: {
+                    nombre: "Programa Oportunidades - FEDERAL",
+                    cue: "300351100",
+                    añoCursa: "Módulo VI",
+                },
+                materias: [
+                    { modulo: "Módulo I", materia: "Lenguas", nota: 8.75 },
+                    { modulo: "Módulo I", materia: "Matemática", nota: 8.00 },
+                    { modulo: "Módulo I", materia: "Ciencias Sociales", nota: 8.88 },
+                    { modulo: "Módulo I", materia: "Ciencias Naturales", nota: 9.50 },
+                    { modulo: "Módulo I", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo II", materia: "Lenguas", nota: 8.63 },
+                    { modulo: "Módulo II", materia: "Matemática II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Sociales II", nota: 8.00 },
+                    { modulo: "Módulo II", materia: "Ciencias Naturales II", nota: 9.75 },
+                    { modulo: "Módulo II", materia: "Proyecto de Acción", nota: 8.00 },
+
+                    { modulo: "Módulo III", materia: "Lenguas", nota: 8.50 },
+                    { modulo: "Módulo III", materia: "Matemática III", nota: 8.00 },
+                    { modulo: "Módulo III", materia: "Ciencias Sociales III", nota: 7.75 },
+                    { modulo: "Módulo III", materia: "Ciencias Naturales III", nota: 8.25 },
+                    { modulo: "Módulo III", materia: "Proyecto de Acción", nota: 7.00 },
+
+                    { modulo: "Módulo IV", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo IV", materia: "Matemática IV", nota: 9.00 },
+                    { modulo: "Módulo IV", materia: "Ciencias Sociales IV", nota: 8.88 },
+                    { modulo: "Módulo IV", materia: "Ciencias Naturales IV", nota: 9.50 },
+                    { modulo: "Módulo IV", materia: "Proyecto de Acción", nota: 9.50 },
+
+                    { modulo: "Módulo V", materia: "Lenguas", nota: 0.00 },
+                    { modulo: "Módulo V", materia: "Matemática V", nota: 9.00 },
+                    { modulo: "Módulo V", materia: "Ciencias Sociales V", nota: 8.88 },
+                    { modulo: "Módulo V", materia: "Ciencias Naturales V", nota: 9.50 },
+                    { modulo: "Módulo V", materia: "Proyecto de Acción", nota: 9.50 },
+                    // Añadir más materias para más módulos según sea necesario
+                ],
+            },
+        };
+
+        // Maneja el evento de envío del formulario
+        document.getElementById('consulta-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Obtiene el número de legajo ingresado
+            const legajo = document.getElementById('legajo').value;
+
+            // Verifica si el legajo existe en el registro de estudiantes
+            if (estudiantes[legajo]) {
+                mostrarResultados(estudiantes[legajo]);
+                document.getElementById('consulta-form').classList.add('hidden'); // Oculta el formulario
+                document.getElementById('volverBtn').classList.add('hidden'); // Oculta el botón de volver
+            } else {
+                alert('No se encontró un estudiante con ese número de legajo.');
+            }
+        });
+
+        // Muestra los resultados en la página
+        function mostrarResultados(estudiante) {
+            // Muestra la sección de resultados
+            document.getElementById('resultado').classList.remove('hidden');
+
+            // Rellena los datos del estudiante
+            document.getElementById('datos-estudiante').innerHTML = `
+                <td>${estudiante.estudiante.apellido}</td>
+                <td>${estudiante.estudiante.nombre}</td>
+                <td>${estudiante.estudiante.documento}</td>
+                <td>${estudiante.estudiante.cuil}</td>
+            `;
+
+            // Rellena los datos de la institución
+            document.getElementById('datos-institucion').innerHTML = `
+                <td>${estudiante.institucion.nombre}</td>
+                <td>${estudiante.institucion.cue}</td>
+                <td>${estudiante.institucion.añoCursa}</td>
+            `;
+
+            // Agrupa las materias por módulo
+            const materiasPorModulo = estudiante.materias.reduce((acc, materia) => {
+                if (!acc[materia.modulo]) {
+                    acc[materia.modulo] = [];
+                }
+                acc[materia.modulo].push(materia);
+                return acc;
+            }, {});
+
+            // Rellena los datos de materias y notas
+            const tablaMateriasNotas = document.getElementById('tabla-materias-notas').getElementsByTagName('tbody')[0];
+            tablaMateriasNotas.innerHTML = ''; // Limpia el contenido existente
+
+            for (const modulo in materiasPorModulo) {
+                // Agrega una fila para el módulo
+                const filaModulo = document.createElement('tr');
+                const celdaModulo = document.createElement('td');
+                celdaModulo.setAttribute('colspan', '3');
+                celdaModulo.textContent = modulo;
+                filaModulo.appendChild(celdaModulo);
+                tablaMateriasNotas.appendChild(filaModulo);
+
+                // Agrega las materias del módulo
+                materiasPorModulo[modulo].forEach(materia => {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td></td> <!-- Celda vacía para el módulo -->
+                        <td>${materia.materia}</td>
+                        <td class="nota">${materia.nota}</td>
+                    `;
+                    tablaMateriasNotas.appendChild(fila);
+                });
+            }
+        }
+
+        // Maneja el evento del botón de imprimir
+        document.getElementById('btn-imprimir').addEventListener('click', function () {
+            window.print();
+        });
+
+        // Maneja el evento del botón de volver
+        document.getElementById('btn-volver').addEventListener('click', function () {
+            window.location.href = 'consulta_legajos.html';
+        });
+    </script>
+</body>
+
+   <footer>
+    <p>&copy; 2024 Danderfert Julio Cesar. Todos los derechos reservados.</p>
+    <p>Creado sólo para el Programa Oportunidades - Federal</p>
+  </footer>
+
+</html>
