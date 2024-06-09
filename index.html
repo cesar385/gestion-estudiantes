@@ -9,11 +9,11 @@
       background-color: #fff;
     }
 
-   .logo-container {
+    .logo-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-bottom: 20px;;
+      margin-bottom: 20px;
     }
 
     .logo {
@@ -28,6 +28,7 @@
       margin-top: 80px;
       background-color: #388beb;
       border-radius: 10px;
+      padding: 10px;
     }
 
     button {
@@ -53,9 +54,6 @@
       background-color: #333; /* Cambia el color de fondo del footer según tu preferencia */
       color: #fff; /* Cambia el color del texto del footer según tu preferencia */
     }
-
-
-    
   </style>
   <script>
     window.addEventListener('load', function() {
@@ -63,20 +61,26 @@
       var btnConsultar = document.getElementById('btnConsultar');
 
       btnRegistrar.addEventListener('click', function() {
-        // Aquí puedes redirigir al usuario a la página de registro de estudiantes
-        // Por ejemplo:
-        window.location.href = 'registro_estudiantes.html';
+        pedirCredenciales();
       });
 
       btnConsultar.addEventListener('click', function() {
-        // Aquí puedes redirigir al usuario a la página de consulta de legajos
-        // Por ejemplo:
         window.location.href = 'consulta_legajos.html';
       });
 
-      // Actualizar la fecha y hora cada segundo
       setInterval(actualizarFechaHora, 1000);
     });
+
+    function pedirCredenciales() {
+      var usuario = prompt('Por favor, ingrese su nombre de usuario:');
+      var contrasena = prompt('Por favor, ingrese su clave:');
+
+      if (usuario === 'Admin' && contrasena === 'Admin1') {
+        window.location.href = 'registro_estudiantes.html';
+      } else {
+        alert('Usuario o clave incorrectos. Intente de nuevo.');
+      }
+    }
 
     function actualizarFechaHora() {
       var fechaHoraActual = new Date().toLocaleString();
@@ -86,24 +90,22 @@
   </script>
 </head>
 <body>
-  <img class="logo" src="logo11.png" alt="Logo 1">
-  <img class="logo" src="logo2.png" alt="Logo 2">
-  <img class="logo" src="logo3.png" alt="Logo 3">
+  <div class="logo-container">
+    <img class="logo" src="logo1.png" alt="Logo 1">
+    <img class="logo" src="logo2.png" alt="Logo 2">
+    <img class="logo" src="logo3.png" alt="Logo 3">
+  </div>
 
   <h1>Bienvenido</h1>
   
-  <button id="btnRegistrar"><strong> Matricular Estudiantes</strong></button>
-  <button id="btnConsultar"><strong> Consultar Legajos</strong></button>
+  <button id="btnRegistrar"><strong>Matricular Estudiantes</strong></button>
+  <button id="btnConsultar"><strong>Consultar Legajos</strong></button>
   
   <p id="fechaHora">Fecha y hora: </p>
-
-
-</body>
 
   <footer>
     <p>&copy; 2024 Danderfert Julio Cesar. Todos los derechos reservados.</p>
     <p>Creado sólo para el Programa Oportunidades - Federal</p>
   </footer>
-
-  
+</body>
 </html>
